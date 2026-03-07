@@ -141,7 +141,7 @@ licenseflow config show
 # Set values
 licenseflow config set apiKey YOUR_KEY
 licenseflow config set licenseKey ABC-123-XYZ
-licenseflow config set apiEndpoint https://your-instance.supabase.co/functions/v1
+licenseflow config set apiEndpoint https://api.licenseflow.dev/v1
 
 # Get a value
 licenseflow config get apiEndpoint
