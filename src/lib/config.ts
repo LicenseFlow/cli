@@ -17,7 +17,7 @@ interface CLIConfig {
 const config = new Conf<CLIConfig>({
   projectName: 'licenseflow-cli',
   defaults: {
-    apiEndpoint: 'https://wxlqnssrcrjuflvqogot.supabase.co/functions/v1',
+    apiEndpoint: 'https://api.licenseflow.dev/v1',
     verbose: false,
   },
 });
