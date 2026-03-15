@@ -1,0 +1,7 @@
+src/lib/config.ts(6,18): error TS2307: Cannot find module 'conf' or its corresponding type declarations.
+  There are types at 'D:/Git Proj/LicenseFlow/seamless-ux-studio/sdk/licenseflow-cli/node_modules/conf/dist/source/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/lib/fingerprint.ts(105,5): error TS2322: Type '{ vendor: string; model: string; vram: number | null; }[]' is not assignable to type '{ vendor: string; model: string; vram?: number | undefined; }[]'.
+  Type '{ vendor: string; model: string; vram: number | null; }' is not assignable to type '{ vendor: string; model: string; vram?: number | undefined; }'.
+    Types of property 'vram' are incompatible.
+      Type 'number | null' is not assignable to type 'number | undefined'.
+        Type 'null' is not assignable to type 'number | undefined'.

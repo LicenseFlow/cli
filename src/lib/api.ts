@@ -186,7 +186,7 @@ export async function getLeaseStatus(
   }
 }
 
-function handleError(error: unknown): ApiResponse {
+function handleError<T>(error: unknown): ApiResponse<T> {
   if (error instanceof AxiosError) {
     const message = error.response?.data?.error || error.message;
     const details = error.response?.data?.details;
