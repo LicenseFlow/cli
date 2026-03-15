@@ -121,12 +121,14 @@ export async function deactivateLicense(
 }
 
 export async function validateLicense(
-  licenseKey: string
+  licenseKey: string,
+  environmentId?: string
 ): Promise<ApiResponse<ValidationResponse>> {
   try {
     const client = createClient();
     const response = await client.post('/verify-license', {
       license_key: licenseKey,
+      ...(environmentId && { environment_id: environmentId }),
     });
     return { success: true, data: response.data };
   } catch (error) {

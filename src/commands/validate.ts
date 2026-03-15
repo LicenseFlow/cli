@@ -13,9 +13,11 @@ export const validateCommand = new Command('validate')
   .argument('[license-key]', 'License key to validate')
   .option('--json', 'Output as JSON')
   .option('-q, --quiet', 'Only output valid/invalid (for scripts)')
+  .option('-e, --environment <id>', 'Environment ID for scoped validation')
   .action(async (licenseKey?: string, options?: {
     json?: boolean;
     quiet?: boolean;
+    environment?: string;
   }) => {
     const key = licenseKey || getLicenseKey();
     
@@ -27,7 +29,7 @@ export const validateCommand = new Command('validate')
     const spin = options?.quiet ? null : spinner('Validating license...').start();
 
     try {
-      const result = await validateLicense(key);
+      const result = await validateLicense(key, options?.environment);
 
       if (!result.success || !result.data) {
         spin?.fail('Validation failed');
