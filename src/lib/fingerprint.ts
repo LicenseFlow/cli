@@ -105,7 +105,7 @@ export async function collectFingerprint(): Promise<FingerprintResult> {
     gpu: graphics.controllers.map(g => ({
       vendor: g.vendor,
       model: g.model,
-      vram: g.vram,
+      vram: g.vram || undefined,
     })),
     network: physicalNetworks,
     disk: disk.map(d => ({
