@@ -22,13 +22,16 @@ import { checkinCommand } from './commands/checkin';
 import { statusCommand } from './commands/status';
 import { fingerprintCommand } from './commands/fingerprint';
 import { configCommand } from './commands/config';
+import { creditsCommand } from './commands/credits';
+import { entitlementsCommand } from './commands/entitlements';
+import { releasesCommand } from './commands/releases';
 
 const program = new Command();
 
 program
   .name('licenseflow')
   .description('LicenseFlow CLI - License management for developers')
-  .version('1.0.0');
+  .version('1.1.0');
 
 // Register all commands
 program.addCommand(activateCommand);
@@ -39,6 +42,9 @@ program.addCommand(checkinCommand);
 program.addCommand(statusCommand);
 program.addCommand(fingerprintCommand);
 program.addCommand(configCommand);
+program.addCommand(creditsCommand);
+program.addCommand(entitlementsCommand);
+program.addCommand(releasesCommand);
 
 // Parse arguments
 program.parse();
