@@ -25,13 +25,15 @@ import { configCommand } from './commands/config';
 import { creditsCommand } from './commands/credits';
 import { entitlementsCommand } from './commands/entitlements';
 import { releasesCommand } from './commands/releases';
+import { registerIdentityCommands } from './commands/identity';
+import { registerSeatsCommands } from './commands/seats';
 
 const program = new Command();
 
 program
   .name('licenseflow')
   .description('LicenseFlow CLI - License management for developers')
-  .version('1.1.0');
+  .version('2.1.0');
 
 // Register all commands
 program.addCommand(activateCommand);
@@ -45,6 +47,8 @@ program.addCommand(configCommand);
 program.addCommand(creditsCommand);
 program.addCommand(entitlementsCommand);
 program.addCommand(releasesCommand);
+registerIdentityCommands(program);
+registerSeatsCommands(program);
 
 // Parse arguments
 program.parse();
