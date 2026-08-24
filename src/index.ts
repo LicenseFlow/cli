@@ -27,6 +27,7 @@ import { entitlementsCommand } from './commands/entitlements';
 import { releasesCommand } from './commands/releases';
 import { registerIdentityCommands } from './commands/identity';
 import { registerSeatsCommands } from './commands/seats';
+import { cacheCommand } from './commands/cache';
 
 const program = new Command();
 
@@ -49,6 +50,7 @@ program.addCommand(entitlementsCommand);
 program.addCommand(releasesCommand);
 registerIdentityCommands(program);
 registerSeatsCommands(program);
+program.addCommand(cacheCommand);
 
 // Parse arguments
 program.parse();
