@@ -28,6 +28,7 @@ import { releasesCommand } from './commands/releases';
 import { registerIdentityCommands } from './commands/identity';
 import { registerSeatsCommands } from './commands/seats';
 import { cacheCommand } from './commands/cache';
+import { importCommand } from './commands/import';
 
 const program = new Command();
 
@@ -51,6 +52,7 @@ program.addCommand(releasesCommand);
 registerIdentityCommands(program);
 registerSeatsCommands(program);
 program.addCommand(cacheCommand);
+program.addCommand(importCommand);
 
 // Parse arguments
 program.parse();

@@ -189,6 +189,29 @@ export async function getLeaseStatus(
   }
 }
 
+export async function importLicensesBatch(
+  licenses: Array<{
+    license_key: string;
+    status?: string;
+    product_id?: string;
+    policy_id?: string;
+    customer_email?: string;
+    max_activations?: number;
+    expires_at?: string | null;
+    metadata?: Record<string, unknown>;
+  }>
+): Promise<ApiResponse<{ imported: number; failed: number; errors?: any[] }>> {
+  try {
+    const client = createClient();
+    const response = await client.post('/import-licenses-batch', {
+      licenses,
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
 function handleError<T>(error: unknown): ApiResponse<T> {
   if (error instanceof AxiosError) {
     const message = error.response?.data?.error || error.message;
