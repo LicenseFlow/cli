@@ -11,7 +11,7 @@ import { Command } from 'commander';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import chalk from 'chalk';
-import { spinner, printHeader, printKeyValue } from '../lib/utils';
+import { spinner, printHeader, printKeyValue } from '../lib/output';
 import { importLicensesBatch } from '../lib/api';
 
 export const importCommand = new Command('import')

@@ -55,4 +55,4 @@ program.addCommand(cacheCommand);
 program.addCommand(importCommand);
 
 // Parse arguments
-program.parse();
+program.parse(process.argv);
