@@ -41,8 +41,8 @@ export const validateCommand = new Command('validate')
         process.exit(1);
       }
 
-      const license = result.data.license;
-      const isValid = result.data.valid && license.status === 'active';
+      const data = result.data;
+      const isValid = data.valid && data.status === 'active';
 
       if (options?.quiet) {
         console.log(isValid ? 'valid' : 'invalid');
@@ -50,30 +50,30 @@ export const validateCommand = new Command('validate')
       }
 
       if (options?.json) {
-        console.log(formatJson(result.data));
+        console.log(formatJson(data));
         process.exit(isValid ? 0 : 1);
       }
 
       spin?.succeed(isValid ? 'License is valid!' : 'License is not valid');
 
       printHeader('License Details');
-      printKeyValue('License ID', license.id);
-      printKeyValue('Status', license.status === 'active' 
-        ? chalk.green(license.status) 
-        : chalk.red(license.status));
+      printKeyValue('License Key', data.licenseKey || key);
+      printKeyValue('Status', data.status === 'active' 
+        ? chalk.green(data.status) 
+        : chalk.red(data.status || 'unknown'));
       
-      if (license.expires_at) {
-        const expires = new Date(license.expires_at);
+      if (data.expiresAt) {
+        const expires = new Date(data.expiresAt);
         const isExpired = expires < new Date();
         printKeyValue('Expires', isExpired 
           ? chalk.red(expires.toISOString()) 
           : expires.toISOString());
       }
 
-      if (license.features && Object.keys(license.features).length > 0) {
-        printHeader('Features');
-        for (const [key, value] of Object.entries(license.features)) {
-          printKeyValue(key, String(value));
+      if (data.entitlements && Object.keys(data.entitlements).length > 0) {
+        printHeader('Entitlements');
+        for (const [entKey, value] of Object.entries(data.entitlements)) {
+          printKeyValue(entKey, String(value));
         }
       }
 

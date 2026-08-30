@@ -24,12 +24,15 @@ export interface ActivationResponse {
 
 export interface ValidationResponse {
   valid: boolean;
-  license: {
-    id: string;
-    status: string;
-    expires_at?: string;
-    features?: Record<string, unknown>;
-  };
+  licenseKey?: string;
+  status?: string;
+  productName?: string;
+  maxActivations?: number;
+  currentActivations?: number;
+  expiresAt?: string;
+  entitlements?: Record<string, unknown>;
+  proof?: string;
+  error?: string;
 }
 
 export interface CheckoutResponse {
@@ -127,8 +130,8 @@ export async function validateLicense(
   try {
     const client = createClient();
     const response = await client.post('/verify-license', {
-      license_key: licenseKey,
-      ...(environmentId && { environment_id: environmentId }),
+      licenseKey,
+      ...(environmentId && { environmentId }),
     });
     return { success: true, data: response.data };
   } catch (error) {

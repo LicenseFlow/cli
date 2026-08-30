@@ -102,17 +102,17 @@ export const statusCommand = new Command('status')
           return;
         }
 
-        const license = result.data.license;
-        const isValid = result.data.valid && license.status === 'active';
+        const data = result.data;
+        const isValid = data.valid && data.status === 'active';
 
         spin.succeed(isValid ? 'License is valid' : 'License is not valid');
 
         printHeader('License Status');
-        printKeyValue('License ID', license.id);
-        printKeyValue('Status', isValid ? chalk.green(license.status) : chalk.red(license.status));
+        printKeyValue('License Key', data.licenseKey || licenseKey);
+        printKeyValue('Status', isValid ? chalk.green(data.status || 'active') : chalk.red(data.status || 'unknown'));
         
-        if (license.expires_at) {
-          const expires = new Date(license.expires_at);
+        if (data.expiresAt) {
+          const expires = new Date(data.expiresAt);
           const isExpired = expires < new Date();
           printKeyValue('Expires', isExpired 
             ? chalk.red(expires.toISOString()) 
