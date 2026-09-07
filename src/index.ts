@@ -35,7 +35,7 @@ const program = new Command();
 program
   .name('licenseflow')
   .description('LicenseFlow CLI - License management for developers')
-  .version('2.1.0');
+  .version('2.2.0');
 
 // Register all commands
 program.addCommand(activateCommand);
