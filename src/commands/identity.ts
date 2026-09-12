@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { createClient } from '../lib/client.js';
+import { createClient } from '../lib/api';
 
 export function registerIdentityCommands(program: Command) {
   const identity = program

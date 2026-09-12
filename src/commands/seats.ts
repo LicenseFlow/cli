@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { createClient } from '../lib/client.js';
+import { createClient } from '../lib/api';
 
 export function registerSeatsCommands(program: Command) {
   const seats = program

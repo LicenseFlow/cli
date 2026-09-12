@@ -73,7 +73,7 @@ export interface LeaseStatusResponse {
   is_valid: boolean;
 }
 
-function createClient(): AxiosInstance {
+export function createClient(): AxiosInstance {
   const apiKey = getApiKey();
   const endpoint = getApiEndpoint();
 
@@ -206,6 +206,44 @@ export async function importLicensesBatch(
     const response = await client.post('/import-licenses-batch', {
       licenses,
     });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export interface MeterResponse {
+  success: boolean;
+  event_id?: string;
+  metric?: string;
+  value?: number;
+  current_usage?: number;
+  usage_limit?: number | null;
+  remaining_tokens?: number | null;
+  model?: string;
+  message?: string;
+}
+
+export async function meterUsage(
+  licenseKeyOrToken: string,
+  metric: string,
+  value: number = 1,
+  metadata?: Record<string, unknown>
+): Promise<ApiResponse<MeterResponse>> {
+  try {
+    const client = createClient();
+    const isToken = licenseKeyOrToken.startsWith('lft_');
+    const headers: Record<string, string> = {};
+    if (isToken) {
+      headers['x-client-token'] = licenseKeyOrToken;
+    }
+    const response = await client.post('/record-usage', {
+      license_key: isToken ? undefined : licenseKeyOrToken,
+      client_token: isToken ? licenseKeyOrToken : undefined,
+      metric,
+      value,
+      metadata,
+    }, { headers });
     return { success: true, data: response.data };
   } catch (error) {
     return handleError(error);

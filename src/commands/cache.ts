@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { getConfig } from '../lib/config';
-import { EntitlementCache } from 'licenseflow/src/cache';
+import { EntitlementCache } from '../lib/cache';
 import * as path from 'node:path';
 import * as os from 'node:os';
 

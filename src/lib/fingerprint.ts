@@ -102,13 +102,13 @@ export async function collectFingerprint(): Promise<FingerprintResult> {
       speed: cpu.speed,
       // Note: CPU serial is not available on most systems
     },
-    gpu: graphics.controllers.map(g => ({
+    gpu: graphics.controllers.map((g: any) => ({
       vendor: g.vendor,
       model: g.model,
       vram: g.vram || undefined,
     })),
     network: physicalNetworks,
-    disk: disk.map(d => ({
+    disk: disk.map((d: any) => ({
       type: d.type,
       size: d.size,
       serial: d.serialNum || undefined,

@@ -29,6 +29,8 @@ import { registerIdentityCommands } from './commands/identity';
 import { registerSeatsCommands } from './commands/seats';
 import { cacheCommand } from './commands/cache';
 import { importCommand } from './commands/import';
+import { meterCommand } from './commands/meter';
+import { verifyOfflineCommand } from './commands/verify-offline';
 
 const program = new Command();
 
@@ -53,6 +55,8 @@ registerIdentityCommands(program);
 registerSeatsCommands(program);
 program.addCommand(cacheCommand);
 program.addCommand(importCommand);
+program.addCommand(meterCommand);
+program.addCommand(verifyOfflineCommand);
 
 // Parse arguments
 program.parse(process.argv);
