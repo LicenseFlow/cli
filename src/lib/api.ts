@@ -212,9 +212,18 @@ export async function importLicensesBatch(
   }
 }
 
+export interface MeterOptions {
+  metadata?: Record<string, unknown>;
+  idempotencyKey?: string;
+  customerId?: string;
+  dimensions?: Record<string, unknown>;
+}
+
 export interface MeterResponse {
   success: boolean;
+  accepted?: boolean;
   event_id?: string;
+  is_duplicate?: boolean;
   metric?: string;
   value?: number;
   current_usage?: number;
@@ -222,13 +231,21 @@ export interface MeterResponse {
   remaining_tokens?: number | null;
   model?: string;
   message?: string;
+  status?: 'normal' | 'warning' | 'critical' | 'exceeded';
+  action?: 'ALLOW' | 'WARN' | 'BLOCK';
+  usage?: {
+    current: number;
+    limit: number | null;
+    remaining: number | null;
+    percentage: number | null;
+  };
 }
 
 export async function meterUsage(
   licenseKeyOrToken: string,
   metric: string,
   value: number = 1,
-  metadata?: Record<string, unknown>
+  options?: MeterOptions | Record<string, unknown>
 ): Promise<ApiResponse<MeterResponse>> {
   try {
     const client = createClient();
@@ -237,12 +254,22 @@ export async function meterUsage(
     if (isToken) {
       headers['x-client-token'] = licenseKeyOrToken;
     }
+
+    const opts: MeterOptions = (options && ('idempotencyKey' in options || 'customerId' in options || 'dimensions' in options))
+      ? (options as MeterOptions)
+      : { metadata: options as Record<string, unknown> };
+
     const response = await client.post('/record-usage', {
       license_key: isToken ? undefined : licenseKeyOrToken,
       client_token: isToken ? licenseKeyOrToken : undefined,
+      event_name: metric,
       metric,
+      quantity: value,
       value,
-      metadata,
+      idempotency_key: opts.idempotencyKey,
+      customer_id: opts.customerId,
+      dimensions: opts.dimensions,
+      metadata: opts.metadata,
     }, { headers });
     return { success: true, data: response.data };
   } catch (error) {

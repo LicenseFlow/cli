@@ -13,11 +13,17 @@ export const meterCommand = new Command('meter')
   .argument('[license-or-token]', 'License key (lf_...) or client access token (lft_...)')
   .requiredOption('-m, --metric <name>', 'Metric name (e.g. api_calls, tokens, gigabytes)')
   .option('-v, --value <number>', 'Amount to increment/consume', '1')
+  .option('--idempotency-key <key>', 'Unique idempotency key to prevent double-metering')
+  .option('--customer-id <id>', 'Target customer/tenant identifier')
+  .option('--dimensions <json>', 'JSON dimensions (e.g. {"model":"claude-3-5"})')
   .option('--metadata <json>', 'Optional JSON metadata string')
   .option('--json', 'Output as JSON')
   .action(async (keyOrToken: string | undefined, options: {
     metric: string;
     value: string;
+    idempotencyKey?: string;
+    customerId?: string;
+    dimensions?: string;
     metadata?: string;
     json?: boolean;
   }) => {
@@ -43,10 +49,25 @@ export const meterCommand = new Command('meter')
       }
     }
 
+    let parsedDimensions: Record<string, unknown> | undefined;
+    if (options.dimensions) {
+      try {
+        parsedDimensions = JSON.parse(options.dimensions);
+      } catch {
+        console.error(chalk.red('Error: Invalid JSON string provided for --dimensions.'));
+        process.exit(1);
+      }
+    }
+
     const spinner = options.json ? null : ora(`Recording usage for metric "${options.metric}"...`).start();
 
     try {
-      const res = await meterUsage(target, options.metric, val, parsedMeta);
+      const res = await meterUsage(target, options.metric, val, {
+        metadata: parsedMeta,
+        dimensions: parsedDimensions,
+        idempotencyKey: options.idempotencyKey,
+        customerId: options.customerId,
+      });
 
       if (!res.success || !res.data) {
         spinner?.fail(chalk.red('Usage metering failed'));
@@ -59,7 +80,11 @@ export const meterCommand = new Command('meter')
       }
 
       const data = res.data;
-      spinner?.succeed(chalk.green('Usage event recorded successfully!'));
+      if (data.is_duplicate) {
+        spinner?.succeed(chalk.yellow('Duplicate event recognised via idempotency_key (no double charge)'));
+      } else {
+        spinner?.succeed(chalk.green('Usage event accepted & recorded!'));
+      }
 
       if (options.json) {
         console.log(JSON.stringify(data, null, 2));
@@ -67,17 +92,30 @@ export const meterCommand = new Command('meter')
       }
 
       console.log();
-      console.log(chalk.bold('Usage Summary:'));
+      console.log(chalk.bold('Usage & Commercial Control Summary:'));
       console.log(`  Metric:           ${chalk.cyan(options.metric)}`);
       console.log(`  Reported Units:   ${chalk.yellow(String(val))}`);
-      if (data.current_usage !== undefined) {
-        console.log(`  Current Usage:    ${chalk.white(String(data.current_usage))}`);
+      
+      const currentUsage = data.usage?.current ?? data.current_usage;
+      const usageLimit = data.usage?.limit ?? data.usage_limit;
+      const remainingTokens = data.usage?.remaining ?? data.remaining_tokens;
+
+      if (currentUsage !== undefined) {
+        console.log(`  Current Usage:    ${chalk.white(String(currentUsage))}`);
       }
-      if (data.usage_limit !== undefined && data.usage_limit !== null) {
-        console.log(`  Usage Limit:      ${chalk.white(String(data.usage_limit))}`);
+      if (usageLimit !== undefined && usageLimit !== null) {
+        console.log(`  Usage Limit:      ${chalk.white(String(usageLimit))}`);
       }
-      if (data.remaining_tokens !== undefined && data.remaining_tokens !== null) {
-        console.log(`  Remaining:        ${chalk.green(String(data.remaining_tokens))}`);
+      if (remainingTokens !== undefined && remainingTokens !== null) {
+        console.log(`  Remaining:        ${chalk.green(String(remainingTokens))}`);
+      }
+      if (data.status) {
+        const color = data.status === 'exceeded' ? chalk.red : data.status === 'critical' ? chalk.magenta : data.status === 'warning' ? chalk.yellow : chalk.green;
+        console.log(`  Quota Status:     ${color(data.status.toUpperCase())}`);
+      }
+      if (data.action) {
+        const actColor = data.action === 'BLOCK' ? chalk.red.bold : data.action === 'WARN' ? chalk.yellow : chalk.green;
+        console.log(`  Enforcement:      ${actColor(data.action)}`);
       }
       if (data.event_id) {
         console.log(`  Event ID:         ${chalk.gray(data.event_id)}`);
