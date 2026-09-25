@@ -31,6 +31,7 @@ import { cacheCommand } from './commands/cache';
 import { importCommand } from './commands/import';
 import { meterCommand } from './commands/meter';
 import { verifyOfflineCommand } from './commands/verify-offline';
+import { aiCommand } from './commands/ai';
 
 const program = new Command();
 
@@ -57,6 +58,7 @@ program.addCommand(cacheCommand);
 program.addCommand(importCommand);
 program.addCommand(meterCommand);
 program.addCommand(verifyOfflineCommand);
+program.addCommand(aiCommand);
 
 // Parse arguments
 program.parse(process.argv);
