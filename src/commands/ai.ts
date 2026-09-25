@@ -217,3 +217,81 @@ aiCommand
     printKeyValue('Output Target', options.output);
     log.success('Tamper-evident audit package ready for auditor inspection.');
   });
+
+// 7. ai budget — Check AI token budget for a license key
+aiCommand
+  .command('budget')
+  .description('Check AI token quota and usage for a license key')
+  .requiredOption('-l, --license-key <key>', 'License key to check')
+  .option('-r, --requested <tokens>', 'Requested token count to test sufficiency', '0')
+  .option('--json', 'Output response in JSON format')
+  .action(async (options: { licenseKey: string; requested: string; json?: boolean }) => {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      log.error('API key required. Run `licenseflow config set apiKey <key>` first.');
+      process.exit(1);
+    }
+
+    const spinner = ora('Checking AI token budget...').start();
+    try {
+      const endpoint = getApiEndpoint();
+      const res = await fetch(`${endpoint}/rest/v1/rpc/check_ai_token_budget`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'apikey': apiKey,
+        },
+        body: JSON.stringify({
+          p_license_id: options.licenseKey,
+          p_requested_tokens: parseInt(options.requested, 10),
+        }),
+      });
+
+      const data = await res.json();
+      spinner.stop();
+
+      if (options.json) {
+        console.log(JSON.stringify(data, null, 2));
+        return;
+      }
+
+      if (!data?.has_quota) {
+        log.warn(`No AI token quota found for this license.`);
+        if (data?.reason) {
+          printKeyValue('Reason', data.reason);
+        }
+        return;
+      }
+
+      printHeader('AI Token Budget');
+      printKeyValue('License', options.licenseKey);
+      printKeyValue('Quota', data.quota?.toLocaleString() || '0');
+      printKeyValue('Used', data.used?.toLocaleString() || '0');
+      printKeyValue('Remaining', data.remaining?.toLocaleString() || '0');
+
+      const usagePct = data.quota > 0 ? Math.round((data.used / data.quota) * 100) : 0;
+      const barLen = 30;
+      const filled = Math.round((usagePct / 100) * barLen);
+      const bar = chalk.green('█'.repeat(filled)) + chalk.gray('░'.repeat(barLen - filled));
+      console.log(`  Usage:  [${bar}] ${usagePct}%`);
+
+      printKeyValue('Allowed Models', data.allowed_models === '*' ? 'All (Unrestricted)' : data.allowed_models);
+
+      if (parseInt(options.requested, 10) > 0) {
+        printKeyValue('Sufficient for Request', data.sufficient ? chalk.green('YES') : chalk.red('NO'));
+      }
+
+      if (data.remaining <= 0) {
+        log.error('Token quota exhausted. AI Gateway requests will be rejected (HTTP 429).');
+      } else if (usagePct >= 80) {
+        log.warn(`Token usage is at ${usagePct}% of quota. Consider increasing the ai_token_quota entitlement.`);
+      } else {
+        log.success('Budget healthy.');
+      }
+    } catch (err: any) {
+      spinner.stop();
+      log.error(`Failed to check AI budget: ${err.message}`);
+      process.exit(1);
+    }
+  });
