@@ -32,13 +32,16 @@ import { importCommand } from './commands/import';
 import { meterCommand } from './commands/meter';
 import { verifyOfflineCommand } from './commands/verify-offline';
 import { aiCommand } from './commands/ai';
+import { policyCommand } from './commands/policy';
+import { airgapCommand } from './commands/airgap';
+import { auditCommand } from './commands/audit';
 
 const program = new Command();
 
 program
   .name('licenseflow')
-  .description('LicenseFlow CLI - License management for developers')
-  .version('2.2.0');
+  .description('LicenseFlow CLI - Entitlement, governance, and license control plane')
+  .version('2.4.0');
 
 // Register all commands
 program.addCommand(activateCommand);
@@ -59,6 +62,9 @@ program.addCommand(importCommand);
 program.addCommand(meterCommand);
 program.addCommand(verifyOfflineCommand);
 program.addCommand(aiCommand);
+program.addCommand(policyCommand);
+program.addCommand(airgapCommand);
+program.addCommand(auditCommand);
 
 // Parse arguments
 program.parse(process.argv);

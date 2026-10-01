@@ -1,7 +1,7 @@
 {
   "name": "@licenseflow/cli",
-  "version": "2.2.0",
-  "description": "LicenseFlow CLI - Manage licenses, activations, and fingerprints from the command line",
+  "version": "2.4.0",
+  "description": "LicenseFlow CLI - Entitlement, governance, and license control plane",
   "main": "dist/index.js",
   "bin": {
     "licenseflow": "dist/index.js",

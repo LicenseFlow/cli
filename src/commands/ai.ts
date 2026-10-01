@@ -43,7 +43,7 @@ aiCommand
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as any;
       spinner.stop();
 
       if (options.json) {
@@ -103,7 +103,7 @@ aiCommand
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as any;
       spinner.stop();
 
       if (options.json) {
@@ -248,7 +248,7 @@ aiCommand
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as any;
       spinner.stop();
 
       if (options.json) {
