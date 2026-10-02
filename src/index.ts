@@ -35,6 +35,7 @@ import { aiCommand } from './commands/ai';
 import { policyCommand } from './commands/policy';
 import { airgapCommand } from './commands/airgap';
 import { auditCommand } from './commands/audit';
+import { providerCommand } from './commands/provider';
 
 const program = new Command();
 
@@ -63,6 +64,7 @@ program.addCommand(meterCommand);
 program.addCommand(verifyOfflineCommand);
 program.addCommand(aiCommand);
 program.addCommand(policyCommand);
+program.addCommand(providerCommand);
 program.addCommand(airgapCommand);
 program.addCommand(auditCommand);
 
